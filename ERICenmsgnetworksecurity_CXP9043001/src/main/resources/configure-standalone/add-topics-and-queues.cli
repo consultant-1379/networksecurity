@@ -1,0 +1,14 @@
+#Insert the JMS topics and queues into the standalone
+
+if (outcome == success) of /subsystem=messaging-activemq/server=default/jms-queue=NodePamRequestQueue:add(entries=[queue/NodePamRequestQueue-amq java:jboss/exported/jms/queue/NodePamRequestQueue-amq])
+end-if
+if (outcome == success) of /subsystem=messaging-activemq/server=default/jms-topic=NodePamTopic:add(entries=[topic/NodePamTopic-amq java:jboss/exported/jms/topic/NodePamTopic-amq])
+end-if
+
+if (outcome == success) of /subsystem=messaging-activemq/server=default/jms-topic=modelDeploymentEvents:add(entries=[topic/modelDeploymentEvents-amq java:jboss/exported/jms/topic/modelDeploymentEvents-amq])
+end-if
+
+#if (outcome == success) of /subsystem=messaging-activemq/server=default/jms-queue=Clustered-security-dps-notification-event:add(entries=[queue/security-dps-notification-event-amq java:jboss/exported/jms/queue/security-dps-notification-event-amq])
+#end-if
+
+

@@ -1,0 +1,9 @@
+#Configure the Driver and configds Datasource
+if (outcome == success) of /subsystem=datasources/jdbc-driver=sfwk-postgresql:add(driver-name=sfwk-postgresql,driver-module-name=com.ericsson.oss.itpf.sdk.postgresql,driver-class-name=org.postgresql.Driver)
+end-if
+
+if (outcome == success) of /subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgres.jdbc.jboss.postgres-jboss-subsystem,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)
+end-if
+
+#if (outcome == success) of /subsystem=datasources/data-source=configds:add(driver-name=postgresql,connection-url=jdbc:postgresql://${env.POSTGRES_SERVICE:postgresql01}:5432/configds,jndi-name=java:jboss/datasources/configds,enabled=true,use-java-context=true,use-ccm=true,min-pool-size=2,max-pool-size=25,pool-use-strict-min=false,pool-prefill=false,flush-strategy=FailingConnectionOnly,security-domain=VaultConfigAdmin, prepared-statements-cache-size=32,allocation-retry=6,allocation-retry-wait-millis=10000,idle-timeout-minutes=1,valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker,validate-on-match=true,background-validation=false,use-fast-fail=false)
+#end-if

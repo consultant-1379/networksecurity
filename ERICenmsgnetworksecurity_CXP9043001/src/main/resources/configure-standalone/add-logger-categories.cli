@@ -1,0 +1,29 @@
+# Logger categories
+if (outcome == success) of /subsystem=logging/logger=com.arjuna.ats.jta:add()
+    /subsystem=logging/logger=com.arjuna.ats.jta:write-attribute(name=level, value=ERROR)
+end-if
+if (outcome == success) of /subsystem=logging/logger=com.ericsson.oss.itpf.sdk.core.retry.classic.RetryManagerNonCDIImpl:add()
+    /subsystem=logging/logger=com.ericsson.oss.itpf.sdk.core.retry.classic.RetryManagerNonCDIImpl:write-attribute(name=level, value=OFF)
+end-if
+if (outcome == success) of /subsystem=logging/logger=com.ericsson.oss.itpf.sdk.cluster.counter.classic.JGroupsCounterManagerSPIImpl:add()
+    /subsystem=logging/logger=com.ericsson.oss.itpf.sdk.cluster.counter.classic.JGroupsCounterManagerSPIImpl:write-attribute(name=level, value=ERROR)
+end-if
+if (outcome == success) of /subsystem=logging/logger=com.ericsson.oss.itpf.sdk.cluster.lock.classic.JGroupsLockManagerSPIImpl:add()
+    /subsystem=logging/logger=com.ericsson.oss.itpf.sdk.cluster.lock.classic.JGroupsLockManagerSPIImpl:write-attribute(name=level, value=ERROR)
+end-if
+if (outcome == success) of /subsystem=logging/logger=org.jboss.ejb.client.remoting.RemotingConnectionClusterNodeManager:add()
+    /subsystem=logging/logger=org.jboss.ejb.client.remoting.RemotingConnectionClusterNodeManager:write-attribute(name=level, value=WARN)
+end-if
+if (outcome == success) of /subsystem=logging/logger=org.jboss.as.ejb3.remote.RemotingConnectionClusterNodeManager:add()
+    /subsystem=logging/logger=org.jboss.as.ejb3.remote.RemotingConnectionClusterNodeManager:write-attribute(name=level, value=WARN)
+end-if
+if (outcome == success) of /subsystem=logging/logger=com.ericsson.oss.itpf.datalayer.eventbus.core.ChannelLocatorDefaultImpl:add()
+    /subsystem=logging/logger=com.ericsson.oss.itpf.datalayer.eventbus.core.ChannelLocatorDefaultImpl:write-attribute(name=level, value=ERROR)
+end-if
+if (outcome == success) of /subsystem=logging/logger=com.ericsson.oss.itpf.datalayer.eventbus.jms.JmsChannelProvider:add()
+    /subsystem=logging/logger=com.ericsson.oss.itpf.datalayer.eventbus.jms.JmsChannelProvider:write-attribute(name=level, value=ERROR)
+end-if
+if (outcome == success) of /subsystem=logging/logger=com.ericsson.oss.itpf.datalayer.eventbus.jms:add()
+    /subsystem=logging/logger=com.ericsson.oss.itpf.datalayer.eventbus.jms:write-attribute(name=level, value=WARN)
+end-if
+

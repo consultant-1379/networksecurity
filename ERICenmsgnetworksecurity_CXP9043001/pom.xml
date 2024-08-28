@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.ericsson.oss.servicegroupcontainers</groupId>
+    <artifactId>networksecurity</artifactId>
+    <version>1.6.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>ERICenmsgnetworksecurity_CXP9043001</artifactId>
+  <packaging>${rpm.packaging}</packaging>
+  <name>networksecurity feature CXP module</name>
+  <properties>
+    <com.ericsson.oss.rpm.architecture>noarch</com.ericsson.oss.rpm.architecture>
+    <rpm-root>ericsson</rpm-root>
+    <comp-name>enm</comp-name>
+    <install-path>jboss</install-path>
+    <publish_artifact>true</publish_artifact>
+    <media.category>service</media.category>
+    <!-- this is in the integration pom, which needs to be merged -->
+    <vm.jboss-install-path>/ericsson/3pp/jboss</vm.jboss-install-path>
+  </properties>
+  <build>
+    <plugins>
+       <plugin>
+         <groupId>com.ericsson.oss.itpf.deployment</groupId>
+         <artifactId>deployment-descriptor-plugin</artifactId>
+         <executions>
+           <execution>
+             <goals>
+               <goal>configurable-entity</goal>
+             </goals>
+           </execution>
+         </executions>
+         <configuration>
+           <configEntity>
+             <stereotype>SERVICE_PKG</stereotype>
+             <parameters>
+               <property name="vm_service_name" defaultValue="netsecserv" />
+               <itemType name="vm-package">
+                 <property name="name" defaultValue="ERICenmsgnetworksecurity_CXP9043001" />
+               </itemType>
+             </parameters>
+             <deploymentDependencies>
+               <deploymentDependency>
+                 <groupId>com.ericsson.oss.itpf.deployment.tools</groupId>
+                 <artifactId>virtual-machine</artifactId>
+                 <qualifier>CONTAINER</qualifier>
+                 <alias>vm</alias>
+               </deploymentDependency>
+               <deploymentDependency>
+                <groupId>com.ericsson.oss.services.security.model.npam</groupId>
+                <artifactId>ERICnpamservicemodel_CXP9043012</artifactId>
+                <alias>npamservicemodel</alias>
+               </deploymentDependency>
+             </deploymentDependencies>
+             <assignments>
+               <assign>
+                 <path>vm</path>
+                 <property name="routable_interfaces" value="0" />
+                 <itemType name="vm-service">
+                   <property name="service_name" value="netsecserv" />
+                   <property name="cpus" value="2" />
+                   <property name="ram" value="5120M" />
+                   <property name="image_name" value="rhel7-jboss-image" />
+                 </itemType>
+                 <itemType name="vcs-clustered-service">
+                   <property name="active" value="2" />
+                   <property name="standby" value="0" />
+                 </itemType>
+               </assign>
+               <assign>
+                 <path>vm</path>
+                 <scope>PHYSICAL_PRODUCTION</scope>
+                 <itemType name="vm-service">
+                   <property name="cpus" value="2" />
+                   <property name="ram" value="5120M" />
+                 </itemType>
+                 <itemType name="vcs-clustered-service">
+                   <property name="active" value="2" />
+                   <property name="standby" value="0" />
+                 </itemType>
+               </assign>
+               <assign>
+                 <path>vm</path>
+                 <scope>PHYSICAL_TEST</scope>
+                 <itemType name="vm-service">
+                   <property name="cpus" value="2" />
+                   <property name="ram" value="5120M" />
+                 </itemType>
+               </assign>
+               <assign>
+                 <path>vm</path>
+                 <scope>CLOUD</scope>
+                 <itemType name="vm-service">
+                   <property name="cpus" value="2" />
+                   <property name="ram" value="5120M" />
+                 </itemType>
+               </assign>
+           </assignments>
+           </configEntity>
+         </configuration>
+       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>timestamp-property</id>
+            <goals>
+              <goal>timestamp-property</goal>
+            </goals>
+            <configuration>
+              <name>this.year</name>
+              <pattern>yyyy</pattern>
+              <unit>year</unit>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <skip>true</skip>
+          <inherited>true</inherited>
+          <copyright>${this.year} Ericsson AB. All rights reserved</copyright>
+          <description>${ericsson.rstate}</description>
+          <group>ERI-NMS</group>
+          <vendor>Ericsson AB</vendor>
+          <url>www.ericsson.com</url>
+          <requires>
+            <!--The following is an example, non-exhaustive or specific list 
+              of required RPM's for most JEE Service Groups -->
+
+            <!-- JAVA 8 -->
+            <require>EXTRserverjre_CXP9035480</require>
+
+            <!-- EAP 7 -->
+            <require>EXTReap7_CXP9037438</require>
+
+            <!--General -->
+            <require>ERICpib2_CXP9037459</require>
+            <require>ERICserviceframework4_CXP9037454</require>
+            <require>ERICserviceframeworkmodule4_CXP9037453</require>
+            <require>ERICmodelserviceapi_CXP9030594</require>
+            <require>ERICmodelservice_CXP9030595</require>
+            <require>ERICddc_CXP9030294</require>
+            <require>ERICmediationengineapi2_CXP9038435</require>
+
+            <!-- JBoss -->
+            <require>ERICeap7config_CXP9037440</require>
+
+            <!-- DPS -->
+            <require>ERICdpsruntimeimpl_CXP9030468</require>
+            <require>ERICdpsmediationclient2_CXP9038436</require>
+            <require>ERICdpsruntimeapi_CXP9030469</require>
+
+            <require>ERICpostgresqljdbc_CXP9031176</require>
+            <require>EXTRpostgresclient2_CXP9043965</require>
+            <require>ERICpostgresutils_CXP9038493</require>
+
+            <!-- Cryptography Service -->
+            <require>ERICcryptographyserviceapi_CXP9031014</require>
+            <require>ERICcryptographyservice_CXP9031013</require>
+
+            <!-- Credential Manager -->
+            <require>ERICvaultloginmodule_CXP9036201</require>
+
+            <!-- NPAM -->
+            <require>ERICnpamservice_CXP9043009</require>
+
+            <!--Include the remainder of the dependent RPMs -->
+          </requires>
+          <mappings>
+            <mapping>
+              <directory>${vm.jboss-install-path}</directory>
+              <filemode>664</filemode>
+              <username>${jboss-username}</username>
+              <groupname>${jboss-groupname}</groupname>
+              <configuration>false</configuration>
+              <directoryIncluded>false</directoryIncluded>
+              <recurseDirectories>false</recurseDirectories>
+              <sources>
+                <source>
+                  <location>src/main/resources/jboss-as.conf</location>
+                  <destination>jboss-as.conf</destination>
+                </source>
+                <source>
+                  <location>src/main/resources/jboss-as.conf</location>
+                  <destination>jboss-as-flavour-2G.conf</destination>
+                </source>
+                <source>
+                  <location>src/main/resources/jboss-as.conf</location>
+                  <destination>jboss-as-flavour-4G.conf</destination>
+                </source>
+                <source>
+                  <location>src/main/resources/jboss-as.conf</location>
+                  <destination>jboss-as-flavour-6G.conf</destination>
+                </source>
+                <source>
+                  <location>src/main/resources/jboss-as.conf</location>
+                  <destination>app-server.conf</destination>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>${vm.jboss-install-path}/bin</directory>
+              <filemode>550</filemode>
+              <username>${jboss-username}</username>
+              <groupname>${jboss-groupname}</groupname>
+              <configuration>false</configuration>
+              <directoryIncluded>false</directoryIncluded>
+              <recurseDirectories>false</recurseDirectories>
+              <sources>
+                <source>
+                  <location>src/main/resources</location>
+                  <includes>
+                    <include>jboss-as-remote-ejb.conf</include>
+                  </includes>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>${vm.jboss-install-path}/bin/cli/services</directory>
+              <filemode>664</filemode>
+              <username>${jboss-username}</username>
+              <groupname>${jboss-groupname}</groupname>
+              <configuration>false</configuration>
+              <directoryIncluded>false</directoryIncluded>
+              <recurseDirectories>false</recurseDirectories>
+              <sources>
+                <source>
+                  <location>src/main/resources/configure-standalone</location>
+                  <includes>
+                    <include>add-properties.cli</include>
+                    <include>add-topics-and-queues.cli</include>
+                    <include>update-subsystems-configuration.cli</include>
+                    <include>add-logger-categories.cli</include>
+                    <include>add-datasource-categories.cli</include>
+                  </includes>
+                </source>
+              </sources>
+            </mapping>
+          </mappings>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

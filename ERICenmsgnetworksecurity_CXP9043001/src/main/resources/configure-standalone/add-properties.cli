@@ -1,0 +1,28 @@
+
+# Apply configuration for Remote EJB
+if (outcome == success) of /system-property=org.jboss.ejb.initial-module-wait-time:add(value=300)
+end-if
+
+if (outcome == success) of /system-property=jboss.as.management.blocking.timeout:add(value=600)
+end-if
+
+if (outcome == success) of /system-property=infinispan.sync.replTimeout:add(value=30000)
+end-if
+
+# Consumer setup
+if (outcome == success) of /system-property=sdk.eventbus.jms.concurrent.queue.listeners.number.NodePamRequestQueue.jobExecutor:add(value=5)
+echo "configured  consumers for NodePamRequestQueue with selector jobExecutor = 5"
+end-if
+if (outcome == success) of /system-property=sdk.eventbus.jms.concurrent.queue.listeners.number.NodePamRequestQueue.eventExecutor:add(value=5)
+echo "configured  consumers for NodePamRequestQueue with selector eventExecutor = 5"
+end-if
+if (outcome == success) of /system-property=sdk.eventbus.jms.concurrent.queue.listeners.number.NodePamRequestQueue.submitMainJob:add(value=1)
+echo "configured  consumers for NodePamRequestQueue with selector submitMainJob = 1"
+end-if
+
+
+
+
+
+
+

@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configEntity xmlns="http://www.ericsson.com/oss/itpf/deployment/dst/descriptor">
+  <description>networksecurity</description>
+  <singleton>false</singleton>
+  <scaleUnit>
+    <loadDrivers>
+      <loadDriver name="networkSecurityECIMRadioNodeNe" description="It includes gNodeB, eNodeB, NodeB, GSM NodeB Baseband Radio Nodes "></loadDriver>
+    </loadDrivers>
+    <minimumUnit>
+      <!--minimumUnit.cpuCores : number of vcpu allocated to the VM in vapp deployment-->
+      <!--minimumUnit.cpuMinutes : value for cpu minutes per day required under no load -->
+      <!--minimumUnit.peakCpuMinutes : value for cpu minutes in busy hour required under no load -->
+      <!--minimumUnit.memory : value for memory required under no load-->
+      <!--minimumUnit.profileConversionFormulae : this section is not required to be filled in at present-->
+
+      <!--zero numeric fields or blank calculations if you dont have CPU figures for approval-->
+      <profile>
+        <cpuCores>2</cpuCores>
+        <cpuMinutes>0</cpuMinutes>
+        <peakCpuMinutes>0</peakCpuMinutes>
+        <memory>5120</memory>
+      </profile>
+      <profileConversionFormulae>
+        <cpuCores></cpuCores>
+        <cpuMinutes></cpuMinutes>
+        <peakCpuMinutes></peakCpuMinutes>
+        <memory></memory>
+      </profileConversionFormulae>
+    </minimumUnit>
+    <optimalUnit>
+
+      <!--optimalUnit.profile.cpuCores : number of vcpu allocated to the VM-->
+      <!--optimalUnit.profile.cpuMinutes : after testing this is the cpu minutes per day used under sustainable load-->
+      <!--optimalUnit.profile.peakCpuMinutes : after testing this is the cpu minutes in a busy hour used under sustainable load-->
+      <!--optimalUnit.profile.memory : during initial introduction this is the RAM allocate3d to the VM when it is introduced into the deployment. after testing it is the maximum memory used under sustainable load-->
+      <!--optimalUnit.profile.cpuCores : No input required-->
+      <!--optimalUnit.profileConversionFormulae.cpuMinutes : using load drivers and parameters identify how the no load cpu minutes (minimumUnit.cpuMinutes) are affected by the load applied to the vm up to the optimalUnit.cpuMinutes value.-->
+      <!--optimalUnit.profileConversionFormulae.peakCpuMinutes : using load drivers and parameters identify how the no load peak cpu minutes (minimumUnit.peakCpuMinutes) are affected by the load applied to the vm up to the optimalUnit.peakCpuMinutes value.-->
+      <!--optimalUnit.profileConversionFormulae.memory : using load drivers and parameters identify how the no load memory minimumUnit.memory is increased by the laod applied to the vm up to the optimalUnit.memory value-->
+
+      <!--zero numeric fields or blank calculations if you dont have CPU figures for approval-->
+      <profile>
+        <cpuCores>2</cpuCores>
+        <cpuMinutes>0</cpuMinutes>
+        <peakCpuMinutes>0</peakCpuMinutes>
+        <memory>5120</memory>
+      </profile>
+      <profileConversionFormulae>
+        <cpuCores>()</cpuCores>
+        <cpuMinutes>()</cpuMinutes>
+        <peakCpuMinutes>()</peakCpuMinutes>
+        <memory>(maxJvmHeapSize+maxJvmMetaspaceSize+maxJvmDirectMemory+maxJvmThreadStacks+osAndMemoryPool)</memory>
+      </profileConversionFormulae>
+    </optimalUnit>
+  </scaleUnit>
+  <parameters>
+    <!-- parameters used for Memory dimensioning -->
+    <property name="maxJvmHeapSize" defaultValue="2600" description="Max JVM Heap Size." />
+    <property name="maxJvmMetaspaceSize" defaultValue="512" description="Max JVM Metaspace Size." />
+    <property name="maxJvmDirectMemory" defaultValue="256" description="Max JVM Direct Memory Size." />
+    <property name="maxJvmThreadStacks" defaultValue="200" description="Max JVM Memory occupied by threads (maxNumberOfThread 400)." />
+    <property name="osAndMemoryPool" defaultValue="200" description="Max Operating System and Pools Memory Size." />
+    <!-- parameters used for NodePamUpdateRequestQueue dimensioning -->
+    <property name="maxPamRequestSize" defaultValue="765" description="Max Pam Request Size." />
+    <!-- parameters used for NodePamUpdateRequestTopic dimensioning -->
+    <property name="maxNodePamDataChangeEventSize" defaultValue="500" description="Max Pam Data Change Event Size." />
+    <property name="NumOfNodePamTopicConsumers" defaultValue="2" description="Number Of NodePamTopic Listeners." />
+
+    <!-- parameters used for neo4j dimensioning to include the Network Privileged Access Management functionality -->
+    <property name="sizeOfNetworkElementAccountInDBInKiloBytes" defaultValue="1.8" description="Size of NetworkElementAccount Object in Neo4j DB" usage="OPTIONAL" />
+    <property name="sizeOfNPamJobTemplateInDBInKiloBytes" defaultValue="60" description="Size of NPamJobTemplate Object in Neo4j DB" usage="OPTIONAL" />
+    <property name="sizeOfNPamJobInDBInKiloBytes" defaultValue="60" description="Size of NPamJob Object in Neo4j DB" usage="OPTIONAL" />
+    <property name="sizeOfNPamNEJobInDBInKiloBytes" defaultValue="0.4" description="Size of NPamNEJob Object in Neo4j DB" usage="OPTIONAL" />
+    <property name="NumberOfNetWorkElementAccountPerNode" defaultValue="2" description="Max Number of NetworkElementAccount Object configured for each RadioNode" usage="OPTIONAL" />
+    <property name="AverageNodeNumberForJob" defaultValue="1200" description="Average value of Nodes managed for a single NPamJob and NPamJobTemplate" usage="OPTIONAL" />
+    <property name="HouseKeepingThresholdInMonths" defaultValue="6" description="The NPamJob, NPamJobTemplate and NPamNEJob  older than 6 months will be removed from DB" usage="OPTIONAL" />
+    <property name="AveragePasswordRotationFrequencyInMonths" defaultValue="1" description="Number of time that the passwords will be updated for each month" usage="OPTIONAL" />
+
+  </parameters>
+  <deploymentDependencies>
+    <deploymentDependency>
+    <groupId>com.ericsson.oss.servicegroupcontainers</groupId>
+    <artifactId>networksecurity</artifactId>
+    <version></version>
+    <alias>InternalNetworkSecurityCalculations</alias>
+    <qualifier>GLOBAL</qualifier>
+    <loadDriverConverters>
+      <loadConversionFormula dependencyLoadDriver="networkSecurityECIMRadioNodeNe">(numberGNodeBBasebandNe+numberBasebandRadioLteNe+numberNodeBBasebandNe+numberGSMBasebandRadioNe)</loadConversionFormula>
+
+      <loadConversionFormula dependencyLoadDriver="maxNumberOfNetworkElementAccount">networkSecurityECIMRadioNodeNe * NumberOfNetWorkElementAccountPerNode</loadConversionFormula>
+      <loadConversionFormula dependencyLoadDriver="maxNumberOfNPamJobTemplate">(networkSecurityECIMRadioNodeNe / AverageNodeNumberForJob) * (HouseKeepingThresholdInMonths * AveragePasswordRotationFrequencyInMonths)</loadConversionFormula>
+      <loadConversionFormula dependencyLoadDriver="maxNumberOfNPamJob">(networkSecurityECIMRadioNodeNe / AverageNodeNumberForJob) * (HouseKeepingThresholdInMonths * AveragePasswordRotationFrequencyInMonths)</loadConversionFormula>
+      <loadConversionFormula dependencyLoadDriver="maxNumberOfNPamNEJob">networkSecurityECIMRadioNodeNe * (HouseKeepingThresholdInMonths * AveragePasswordRotationFrequencyInMonths)</loadConversionFormula>
+      <loadConversionFormula dependencyLoadDriver="totalSizeOfNetworkElementAccountsInDBinKbyte">maxNumberOfNetworkElementAccount * sizeOfNetworkElementAccountInDBInKiloBytes</loadConversionFormula>
+      <loadConversionFormula dependencyLoadDriver="totalSizeOfNPamJobTemplatesInDBinKbyte">maxNumberOfNPamJobTemplate * sizeOfNPamJobTemplateInDBInKiloBytes</loadConversionFormula>
+      <loadConversionFormula dependencyLoadDriver="totalSizeOfNPamJobsInDBinKbyte">maxNumberOfNPamJob * sizeOfNPamJobInDBInKiloBytes</loadConversionFormula>
+      <loadConversionFormula dependencyLoadDriver="totalSizeOfNPamNEJobsInDBinKbyte">maxNumberOfNPamNEJob * sizeOfNPamNEJobInDBInKiloBytes</loadConversionFormula>
+    </loadDriverConverters>
+    </deploymentDependency>
+
+    <deploymentDependency>
+      <groupId>com.ericsson.oss.itpf.datalayer.dps.3pp/neo4j</groupId>
+      <artifactId>ERICneo4j_CXP9032710</artifactId>
+      <version></version>
+      <alias>NetowrkElementAccountDbSpace</alias>
+      <qualifier>GLOBAL</qualifier>
+      <loadDriverConverters>
+        <loadConversionFormula dependencyLoadDriver="neo4JNameSpace">"OSS_NE_SEC_DEF"</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="avgNeo4JSizeMB"> maxNumberOfNetworkElementAccount / 1024</loadConversionFormula>
+      </loadDriverConverters>
+    </deploymentDependency>
+    <deploymentDependency>
+      <groupId>com.ericsson.oss.itpf.datalayer.dps.3pp/neo4j</groupId>
+      <artifactId>ERICneo4j_CXP9032710</artifactId>
+      <version></version>
+      <alias>NPamJobsDbSpace</alias>
+      <qualifier>GLOBAL</qualifier>
+      <loadDriverConverters>
+        <loadConversionFormula dependencyLoadDriver="neo4JNameSpace">"npam"</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="avgNeo4JSizeMB"> (totalSizeOfNPamJobTemplatesInDBinKbyte + totalSizeOfNPamJobsInDBinKbyte + totalSizeOfNPamNEJobsInDBinKbyte) / 1024</loadConversionFormula>
+      </loadDriverConverters>
+    </deploymentDependency>
+
+
+    <!-- deploymentDependency section for each resoruce need. load drivers for deployment dependency defined by product which is resource provider NAS and JMS examples included-->
+    <deploymentDependency>
+      <groupId>com.ericsson.oss.itpf.sdk</groupId>
+      <artifactId>sdk-eventbus-jms-hornetq</artifactId>
+      <version></version>
+      <alias>NodePamRequestQueue</alias>
+      <qualifier>GLOBAL</qualifier>
+      <loadDriverConverters>
+        <loadConversionFormula dependencyLoadDriver="jmsDestinationName">NodePamRequestQueue</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="jmsDestinationType">Queue</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="jmsDestinationSizeBytes">(networkSecurityECIMRadioNodeNe*maxPamRequestSize)</loadConversionFormula>
+      </loadDriverConverters>
+    </deploymentDependency>
+    <deploymentDependency>
+      <groupId>com.ericsson.oss.itpf.sdk</groupId>
+      <artifactId>sdk-eventbus-jms-hornetq</artifactId>
+      <version></version>
+      <alias>NodePamTopic</alias>
+      <qualifier>GLOBAL</qualifier>
+      <loadDriverConverters>
+        <loadConversionFormula dependencyLoadDriver="jmsDestinationName">NodePamTopic</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="jmsDestinationType">Topic</loadConversionFormula>
+        <loadConversionFormula dependencyLoadDriver="jmsDestinationSizeBytes">(networkSecurityECIMRadioNodeNe*maxNodePamDataChangeEventSize*NumOfNodePamTopicConsumers)</loadConversionFormula>
+      </loadDriverConverters>
+    </deploymentDependency>
+  </deploymentDependencies>
+</configEntity>

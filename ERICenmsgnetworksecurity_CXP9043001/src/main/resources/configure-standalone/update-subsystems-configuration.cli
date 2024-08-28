@@ -1,0 +1,149 @@
+#
+#Set parameters  inside pooled-connection-factory=activemq-ra
+#
+
+if (outcome == success) of /subsystem=messaging-activemq:write-attribute(name=global-client-thread-pool-max-size,value=64)
+set message="set global-client-thread-pool-max-size = 64"
+else
+set message="error to configure global-client-thread-pool-max-size inside activemq"
+end-if
+echo $message
+if (outcome == success) of /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:write-attribute(name=max-pool-size,value=64)
+set message="set max-pool-size=64 inside pooled-connection-factory=activemq-ra"
+else
+set message="error to configure max-pool-size inside pooled-connection-factory=activemq-ra"
+end-if
+echo $message
+if (outcome == success) of /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:write-attribute(name=consumer-window-size,value=0)
+set message="set consumer-window-size=0 inside pooled-connection-factory=activemq-ra"
+else
+set message="error to configure consumer-window-size inside pooled-connection-factory=activemq-ra"
+end-if
+echo $message
+if (outcome == success) of /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:write-attribute(name=connection-ttl,value=21000)
+set message="set connection-ttl=21000 inside pooled-connection-factory=activemq-ra"
+else
+set messag#e="error to configure connection-ttl inside pooled-connection-factory=activemq-ra"
+end-if
+echo $message
+if (outcome == success) of /subsystem=messaging-activemq/server=default/pooled-connection-factory=activemq-ra:write-attribute(name=client-failure-check-period,value=7000)
+set message="set client-failure-check-period=7000 inside pooled-connection-factory=activemq-ra"
+else
+set message="error to configure client-failure-check-period inside pooled-connection-factory=activemq-ra"
+end-if
+echo $message
+
+#
+#Set parameters  inside connection-factory=RemoteConnectionFactory
+#
+if (outcome == success) of /subsystem=messaging-activemq/server=default/connection-factory=RemoteConnectionFactory:write-attribute(name=consumer-window-size,value=0)
+set message="set consumer-window-size=0 inside connection-factory=RemoteConnectionFactory"
+else
+set message="error to configure consumer-window-size inside connection-factory=RemoteConnectionFactory"
+end-if
+echo $message
+if (outcome == success) of /subsystem=messaging-activemq/server=default/connection-factory=RemoteConnectionFactory:write-attribute(name=connection-ttl,value=21000)
+set message="set connection-ttl=21000 inside connection-factory=RemoteConnectionFactory"
+else
+set message="error to configure connection-ttl inside connection-factory=RemoteConnectionFactory"
+end-if
+echo $message
+if (outcome == success) of /subsystem=messaging-activemq/server=default/connection-factory=RemoteConnectionFactory:write-attribute(name=client-failure-check-period,value=7000)
+set message="set client-failure-check-period=7000 inside connection-factory=RemoteConnectionFactory"
+else
+set message="error to configure client-failure-check-period inside connection-factory=RemoteConnectionFactory"
+end-if
+echo $message
+
+#
+#Set max-threads=64 inside thread-pool=async
+#
+if (outcome == success) of /subsystem=ejb3/thread-pool=async:read-attribute(name="max-threads")
+try
+/subsystem=ejb3/thread-pool=async:write-attribute(name=max-threads,value=32)
+set message="set max-threads=32 inside thread-pool=async"
+catch
+set message="impossible to set max-threads=32 inside thread-pool=async"
+end-try
+else
+set message="not found max-threads inside thread-pool=async"
+end-if
+echo $message
+
+#Set max-pool-size=64 inside slsb-strict-max-pool
+#
+if (outcome == success) of /subsystem=ejb3/strict-max-bean-instance-pool=slsb-strict-max-pool:read-attribute(name="max-pool-size")
+try
+/subsystem=ejb3/strict-max-bean-instance-pool=slsb-strict-max-pool:write-attribute(name=max-pool-size,value=64)
+set message="set max-pool-size=64 inside slsb-strict-max-pool"
+catch
+set message="impossible to set max-pool-size=64 inside slsb-strict-max-pool"
+end-try
+else
+set message="not found max-pool-size inside slsb-strict-max-pool"
+end-if
+echo $message
+
+#Set max-pool-size=20 inside mdb-strict-max-pool
+#
+if (outcome == success) of /subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:read-attribute(name="max-pool-size")
+try
+/subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:write-attribute(name=max-pool-size,value=20)
+set message="set max-pool-size=20 inside mdb-strict-max-pool"
+catch
+set message="impossible to set max-pool-size=20 inside mdb-strict-max-pool"
+end-try
+else
+set message="not found max-pool-size inside mdb-strict-max-pool"
+end-if
+echo $message
+
+# Set task-max-threads and task-core-threads inside  worker
+if (outcome == success) of /subsystem=io/worker=default/:write-attribute(name=task-max-threads,value=64)
+end-if
+
+if (outcome == success) of /subsystem=io/worker=default/:write-attribute(name=task-core-threads,value=64)
+end-if
+
+#Configure the Vault
+if (outcome == success) of /subsystem=security/security-domain=VaultConfigAdmin/:add
+end-if
+
+if (outcome == success) of /subsystem=security/security-domain=VaultConfigAdmin/authentication=classic:add(login-modules=[{"code"=>"com.ericsson.oss.itpf.security.vaultservice.VaultLoginModuleAuthorize", "flag"=>"required", "module"=>"com.ericsson.oss.itpf.security.vaultservice", "module-options"=>[("username"=>"config_admin"),("dbname"=>"configds")]}])
+end-if
+
+##############################################
+#Configure the infinispan
+##############################################
+if (outcome == success) of /subsystem=infinispan/cache-container=cmserv/replicated-cache=repl/component=state-transfer:add(timeout=240000)
+set message="replicated-cache=repl  state-transfer timeout configured 240000"
+else
+set message="impossible to configure the replicated-cache=repl  state-transfer timeout"
+end-if
+echo $message
+
+if (outcome == success) of /subsystem=infinispan/cache-container=cmserv/replicated-cache=remote-connector-client-mappings/component=state-transfer:add(timeout=240000)
+set message="replicated-cache=remote-connector-client-mappings  state-transfer timeout configured 240000"
+else
+set message="impossible to configure the replicated-cache=remote-connector-client-mappings  state-transfer timeout"
+end-if
+echo $message
+
+##############################################
+#Configure the undertow To be decided the right value
+##############################################
+if (outcome == success) of /subsystem=undertow/server=default-server/ajp-listener=ajp:write-attribute(name=max-post-size,value=3221225472)
+set message="undertow  ajp listener configured with max-post-size to 3GB"
+else
+set message="undertow impossible to configure the max-post-size parameter"
+end-if
+echo $message
+
+if (outcome == success) of /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=max-post-size,value=3221225472)
+set message="undertow  http listener configured with max-post-size to 3GB"
+else
+set message="undertow impossible to configure the http listner max-post-size parameter"
+end-if
+echo $message
+
+
